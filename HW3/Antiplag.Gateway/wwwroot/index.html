@@ -1,0 +1,383 @@
+<!doctype html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8" />
+    <title>AntiPlagiat System</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style>
+        :root {
+            --bg-gradient: linear-gradient(135deg, #4f46e5, #9333ea);
+            --card-bg: #ffffff;
+            --card-radius: 18px;
+            --accent: #6366f1;
+            --accent-2: #ec4899;
+            --text-main: #111827;
+            --text-muted: #6b7280;
+            --border-soft: #e5e7eb;
+            --danger: #ef4444;
+            --success: #16a34a;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background: var(--bg-gradient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 32px 16px;
+            color: var(--text-main);
+        }
+
+        .page {
+            max-width: 960px;
+            width: 100%;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: var(--card-radius);
+            box-shadow: 0 24px 60px rgba(15, 23, 42, 0.35);
+            padding: 32px 32px 28px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .logo {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 999px;
+            background: linear-gradient(135deg, #f97316, #ef4444);
+            color: #fff;
+            font-weight: 700;
+            font-size: 20px;
+            margin-bottom: 8px;
+        }
+
+        .title {
+            font-size: 24px;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        .subtitle {
+            margin: 4px 0 0;
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
+        .form-grid {
+            display: grid;
+            gap: 16px;
+            margin-top: 24px;
+        }
+
+        .field-label {
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 6px;
+        }
+
+        .field-input,
+        .field-file {
+            width: 100%;
+            padding: 10px 12px;
+            border-radius: 10px;
+            border: 1px solid var(--border-soft);
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.15s, box-shadow 0.15s, transform 0.05s;
+        }
+
+        .field-input:focus,
+        .field-file:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 1px rgba(99, 102, 241, 0.35);
+            transform: translateY(-1px);
+        }
+
+        .hint {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        .actions {
+            margin-top: 20px;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .btn-primary {
+            border: none;
+            border-radius: 999px;
+            padding: 10px 22px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            background-image: linear-gradient(90deg, var(--accent), var(--accent-2));
+            color: #fff;
+            box-shadow: 0 14px 30px rgba(109, 40, 217, 0.45);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: transform 0.1s ease, box-shadow 0.1s ease, filter 0.1s ease;
+        }
+
+        .btn-primary:hover {
+            filter: brightness(1.05);
+            transform: translateY(-1px);
+            box-shadow: 0 18px 38px rgba(88, 28, 135, 0.55);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+            box-shadow: 0 10px 22px rgba(88, 28, 135, 0.4);
+        }
+
+        .btn-primary[disabled] {
+            opacity: 0.7;
+            cursor: default;
+            box-shadow: none;
+        }
+
+        .btn-spinner {
+            width: 16px;
+            height: 16px;
+            border-radius: 999px;
+            border: 2px solid rgba(255, 255, 255, 0.7);
+            border-top-color: transparent;
+            animation: spin 0.7s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .layout-bottom {
+            display: grid;
+            grid-template-columns: 1.1fr 0.9fr;
+            gap: 16px;
+            margin-top: 24px;
+        }
+
+        .panel {
+            background: #f9fafb;
+            border-radius: 14px;
+            padding: 16px 18px 14px;
+            border: 1px solid #e5e7eb;
+        }
+
+        .panel-title {
+            font-size: 15px;
+            font-weight: 600;
+            margin: 0 0 10px;
+        }
+
+        .panel-list {
+            margin: 0;
+            padding-left: 19px;
+            font-size: 13px;
+            color: #4b5563;
+        }
+
+        .panel-list li {
+            margin-bottom: 4px;
+        }
+
+        .panel-list li:last-child {
+            margin-bottom: 0;
+        }
+
+        .result-ok    { color: var(--success); font-weight: 600; }
+        .result-bad   { color: var(--danger); font-weight: 600; }
+        .result-id    { font-family: "SFMono-Regular", ui-monospace, Menlo, Monaco, Consolas, "Liberation Mono", monospace; font-size: 12px; }
+
+        .result-empty {
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        @media (max-width: 768px) {
+            .card {
+                padding: 24px 20px 20px;
+            }
+            .layout-bottom {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="page">
+    <div class="card">
+        <div class="header">
+            <div class="logo">A</div>
+            <h1 class="title">AntiPlagiat System</h1>
+            <p class="subtitle">Система проверки студенческих работ на плагиат</p>
+        </div>
+
+        <form id="submission-form" class="form-grid">
+            <div>
+                <div class="field-label">ФИО студента</div>
+                <input class="field-input" type="text" name="StudentName" placeholder="Иванов Иван" required />
+            </div>
+
+            <div>
+                <div class="field-label">Задание</div>
+                <input class="field-input" type="text" name="WorkId" placeholder="dz1, kr2 или hw1" required />
+            </div>
+
+            <div>
+                <div class="field-label">ID студента</div>
+                <input class="field-input" type="text" name="StudentId" placeholder="например, 12345 или логин" required />
+            </div>
+
+            <div>
+                <div class="field-label">Группа (необязательно)</div>
+                <input class="field-input" type="text" name="Group" placeholder="БПИ-000" />
+            </div>
+
+            <div>
+                <div class="field-label">Файл работы</div>
+                <input class="field-file" type="file" name="File" accept=".txt,.pdf,.doc,.docx" required />
+                <div class="hint">Поддерживаемые форматы: .txt, .pdf, .doc, .docx</div>
+            </div>
+
+            <div class="actions">
+                <button type="submit" class="btn-primary" id="submit-btn">
+                    <span>Отправить на проверку</span>
+                    <div class="btn-spinner" id="btn-spinner" style="display:none"></div>
+                </button>
+            </div>
+        </form>
+
+        <div class="layout-bottom">
+            <div class="panel">
+                <h3 class="panel-title">Как работает система</h3>
+                <ol class="panel-list">
+                    <li>Вы загружаете файл с работой студента.</li>
+                    <li>Gateway сохраняет файл в сервисе хранения и запускает анализ.</li>
+                    <li>Сервис анализа сравнивает работу с уже загруженными.</li>
+                    <li>Если найдена похожая работа другого студента, выставляется флаг плагиата.</li>
+                </ol>
+            </div>
+
+            <div class="panel" id="result-panel">
+                <h3 class="panel-title">Результат проверки</h3>
+                <div id="result-content" class="result-empty">
+                    Отправьте работу, чтобы увидеть результат.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const form = document.getElementById('submission-form');
+    const resultContent = document.getElementById('result-content');
+    const submitBtn = document.getElementById('submit-btn');
+    const spinner = document.getElementById('btn-spinner');
+
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const fileInput = form.querySelector('input[name="File"]');
+        if (!fileInput.files || fileInput.files.length === 0) {
+            alert('Пожалуйста, выберите файл с работой.');
+            return;
+        }
+
+        const formData = new FormData(form);
+
+        submitBtn.disabled = true;
+        spinner.style.display = 'block';
+        resultContent.className = 'result-empty';
+        resultContent.textContent = 'Идёт проверка работы...';
+
+        try {
+            const response = await fetch('/api/v1/submissions', {
+                method: 'POST',
+                body: formData
+            });
+
+            if (!response.ok) {
+                const text = await response.text();
+                throw new Error(text || ('Ошибка ' + response.status));
+            }
+
+            const data = await response.json();
+
+            const isPlag = !!data.plagiarism;
+            const wordCloudUrl = data.wordCloudUrl || null;
+            const similarity = (data.similarity ?? 0) * 100;
+
+            const statusText = isPlag
+                ? 'Обнаружен возможный плагиат'
+                : 'Плагиат не обнаружен';
+
+            const statusClass = isPlag ? 'result-bad' : 'result-ok';
+
+            let originInfo = '';
+            if (data.originalStudentId) {
+                originInfo = `
+    <div style="margin-top:6px;font-size:13px;">
+      Похоже на работу студента: <strong>${data.originalStudentId}</strong>
+    </div>
+  `;
+            }
+            let wordCloudBlock = '';
+            if (wordCloudUrl) {
+                wordCloudBlock = `
+    <div style="margin-top:12px;">
+      <div style="font-size:12px;color:#6b7280;margin-bottom:4px;">
+        Облако слов по вашей работе:
+      </div>
+      <img src="${wordCloudUrl}"
+           alt="Облако слов"
+           style="max-width:100%;border-radius:6px;border:1px solid #e5e7eb;" />
+    </div>
+  `;
+            }
+            resultContent.className = '';
+            resultContent.innerHTML = `
+  <div class="${statusClass}">${statusText}</div>
+  <div style="margin-top:6px;font-size:13px;">
+    Процент схожести: <strong>${similarity.toFixed(1)}%</strong>
+  </div>
+  <div style="margin-top:6px;font-size:13px;">
+    Задание: <strong>${data.workId}</strong><br/>
+    Студент: <strong>${data.studentName}</strong> (${data.studentId})
+  </div>
+  ${originInfo}
+  <div style="margin-top:6px;font-size:12px;color:#6b7280;">
+    ID проверки: <span class="result-id">${data.submissionId}</span><br/>
+    ID файла: <span class="result-id">${data.fileId}</span>
+  </div>
+  ${wordCloudBlock}
+`;
+
+
+        } catch (err) {
+            console.error(err);
+            resultContent.className = 'result-bad';
+            resultContent.textContent = 'Ошибка при проверке работы: ' + err.message;
+        } finally {
+            submitBtn.disabled = false;
+            spinner.style.display = 'none';
+        }
+    });
+</script>
+</body>
+</html>
