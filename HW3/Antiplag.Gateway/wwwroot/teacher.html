@@ -1,0 +1,434 @@
+<!doctype html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8" />
+    <title>AntiPlagiat – панель преподавателя</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style>
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background: #f3f4f6;
+            padding: 24px 12px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .page {
+            width: 100%;
+            max-width: 960px;
+        }
+
+        .card {
+            background: #ffffff;
+            border-radius: 8px;
+            padding: 16px 20px 18px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            border: 1px solid #e5e7eb;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .header-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .header-subtitle {
+            margin: 2px 0 0;
+            font-size: 13px;
+            color: #6b7280;
+        }
+
+        .nav {
+            font-size: 13px;
+        }
+
+        .nav a {
+            color: #2563eb;
+            text-decoration: none;
+            margin-left: 8px;
+        }
+
+        .nav a:hover {
+            text-decoration: underline;
+        }
+
+        form {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 16px;
+            align-items: flex-end;
+        }
+
+        label {
+            font-size: 13px;
+            margin-bottom: 4px;
+            display: block;
+        }
+
+        .field {
+            min-width: 220px;
+            flex: 1 1 auto;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 6px 8px;
+            border-radius: 4px;
+            border: 1px solid #d1d5db;
+            font-size: 14px;
+        }
+
+        button {
+            padding: 7px 14px;
+            font-size: 14px;
+            border-radius: 4px;
+            border: none;
+            background: #2563eb;
+            color: #fff;
+            cursor: pointer;
+        }
+
+        button:disabled {
+            opacity: 0.7;
+            cursor: default;
+        }
+
+        .hint {
+            font-size: 12px;
+            color: #6b7280;
+            margin-top: 2px;
+        }
+
+        .layout {
+            display: grid;
+            grid-template-columns: 1fr 1.2fr;
+            gap: 16px;
+        }
+
+        @media (max-width: 800px) {
+            .layout {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .panel {
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
+            padding: 10px 12px;
+            background: #f9fafb;
+            font-size: 13px;
+        }
+
+        .panel h3 {
+            margin: 0 0 8px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .empty {
+            color: #6b7280;
+            font-size: 13px;
+        }
+
+        .summary-list {
+            list-style: none;
+            padding-left: 0;
+            margin: 0;
+        }
+
+        .summary-list li {
+            margin-bottom: 4px;
+        }
+
+        .summary-label {
+            color: #6b7280;
+        }
+
+        .summary-value {
+            font-weight: 600;
+        }
+
+        .summary-value.red {
+            color: #dc2626;
+        }
+
+        .summary-value.green {
+            color: #16a34a;
+        }
+
+        .table-wrapper {
+            max-height: 260px;
+            overflow: auto;
+            border-radius: 4px;
+            border: 1px solid #e5e7eb;
+            background: #ffffff;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+        }
+
+        thead {
+            background: #f3f4f6;
+            position: sticky;
+            top: 0;
+        }
+
+        th, td {
+            padding: 4px 6px;
+            border-bottom: 1px solid #e5e7eb;
+            text-align: left;
+            white-space: nowrap;
+        }
+
+        th {
+            font-weight: 600;
+            color: #6b7280;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        .mono {
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+        }
+
+        .status-ok {
+            color: #16a34a;
+            font-weight: 600;
+        }
+
+        .status-bad {
+            color: #dc2626;
+            font-weight: 600;
+        }
+
+        a.download-link {
+            color: #2563eb;
+            text-decoration: none;
+        }
+
+        a.download-link:hover {
+            text-decoration: underline;
+        }
+
+        .error {
+            margin-top: 8px;
+            font-size: 12px;
+            color: #dc2626;
+        }
+    </style>
+</head>
+<body>
+<div class="page">
+    <div class="card">
+        <div class="header">
+            <div>
+                <h1 class="header-title">AntiPlagiat – панель преподавателя</h1>
+                <p class="header-subtitle">Сводка по проверке работ и список всех сдач по заданию</p>
+            </div>
+            <div class="nav">
+                <a href="/">Для студента</a>
+                <a href="/swagger">Swagger</a>
+            </div>
+        </div>
+
+        <form id="work-form">
+            <div class="field">
+                <label for="workId">Идентификатор задания (WorkId)</label>
+                <input id="workId" name="workId" type="text" placeholder="например, HW1 или dz3_kpo" required />
+                <div class="hint">Должен совпадать с WorkId, который вводят студенты при отправке.</div>
+            </div>
+            <button type="submit" id="loadBtn">Показать отчёт</button>
+        </form>
+
+        <div class="layout">
+            <div class="panel">
+                <h3>Сводка</h3>
+                <div id="summary" class="empty">
+                    Введите идентификатор задания и нажмите «Показать отчёт».
+                </div>
+            </div>
+
+            <div class="panel">
+                <h3>Список сдач</h3>
+                <div id="tableContainer" class="empty">
+                    Нет данных для отображения.
+                </div>
+            </div>
+        </div>
+
+        <div id="errorBox" class="error" style="display:none"></div>
+    </div>
+</div>
+
+<script>
+    const form = document.getElementById('work-form');
+    const workIdInput = document.getElementById('workId');
+    const loadBtn = document.getElementById('loadBtn');
+    const summaryDiv = document.getElementById('summary');
+    const tableContainer = document.getElementById('tableContainer');
+    const errorBox = document.getElementById('errorBox');
+
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const workId = workIdInput.value.trim();
+        if (!workId) return;
+
+        errorBox.style.display = 'none';
+        errorBox.textContent = '';
+
+        loadBtn.disabled = true;
+        summaryDiv.className = 'empty';
+        summaryDiv.textContent = 'Загружаем данные...';
+        tableContainer.className = 'empty';
+        tableContainer.textContent = 'Загружаем данные...';
+
+        try {
+            const resp = await fetch('/api/v1/works/' + encodeURIComponent(workId) + '/reports');
+            if (!resp.ok) {
+                const text = await resp.text();
+                throw new Error(text || ('Ошибка ' + resp.status));
+            }
+            const data = await resp.json(); // WorkReportsSummary
+            renderSummary(data);
+            renderTable(data);
+        } catch (err) {
+            summaryDiv.className = 'empty';
+            summaryDiv.textContent = 'Не удалось загрузить сводку.';
+            tableContainer.className = 'empty';
+            tableContainer.textContent = 'Нет данных для отображения.';
+            errorBox.style.display = 'block';
+            errorBox.textContent = 'Ошибка при запросе отчёта: ' + err.message;
+        } finally {
+            loadBtn.disabled = false;
+        }
+    });
+
+    function renderSummary(summary) {
+        const total = summary.totalSubmissions ?? 0;
+        const plag = summary.plagiarizedCount ?? 0;
+        const share = summary.plagiarizedShare ?? 0;
+        const avgSim = (summary.averageSimilarity ?? 0) * 100;
+        const maxSim = (summary.maxSimilarity ?? 0) * 100;
+        const unique = summary.uniqueStudents ?? 0;
+
+        let shareClass = 'summary-value';
+        if (total > 0) {
+            if (share >= 0.7) shareClass += ' red';
+            else if (share <= 0.2) shareClass += ' green';
+        }
+
+        summaryDiv.className = '';
+        summaryDiv.innerHTML = `
+        <ul class="summary-list">
+          <li><span class="summary-label">Задание:</span> <span class="summary-value">${summary.workId || '—'}</span></li>
+          <li><span class="summary-label">Всего сдач:</span> <span class="summary-value">${total}</span></li>
+          <li><span class="summary-label">С плагиатом:</span> <span class="${shareClass}">
+            ${plag} (${(share * 100).toFixed(1)}%)
+          </span></li>
+          <li><span class="summary-label">Средняя схожесть:</span> <span class="summary-value">${avgSim.toFixed(1)}%</span></li>
+          <li><span class="summary-label">Максимальная схожесть:</span> <span class="summary-value">${maxSim.toFixed(1)}%</span></li>
+          <li><span class="summary-label">Уникальных студентов:</span> <span class="summary-value">${unique}</span></li>
+          <li><span class="summary-label">Период сдачи:</span>
+            <span class="summary-value">${formatDate(summary.firstSubmissionAt)} – ${formatDate(summary.lastSubmissionAt)}</span>
+          </li>
+        </ul>
+      `;
+    }
+
+    function renderTable(summary) {
+        const items = summary.items || [];
+        if (!items.length) {
+            tableContainer.className = 'empty';
+            tableContainer.textContent = 'Пока нет ни одной сдачи для этого задания.';
+            return;
+        }
+
+        const rows = items.map(item => {
+            const isPlag = !!item.plagiarism;
+            const sim = (item.similarity ?? 0) * 100;
+            const statusClass = isPlag ? 'status-bad' : 'status-ok';
+            const statusText = isPlag ? 'Плагиат' : 'Ок';
+
+            const origin = item.originalStudentId
+                ? `<span class="mono">${item.originalStudentId}</span>`
+                : '<span style="color:#9ca3af;">—</span>';
+
+            const download = item.fileId
+                ? `<a class="download-link" href="/api/v1/files/${encodeURIComponent(item.fileId)}" target="_blank">скачать</a>`
+                : '<span style="color:#9ca3af;">нет файла</span>';
+
+            return `
+          <tr>
+            <td class="mono">${item.studentId}</td>
+            <td>${download}</td>
+            <td class="${statusClass}">${statusText}</td>
+            <td>${sim.toFixed(1)}%</td>
+            <td>${origin}</td>
+            <td class="mono">${formatDateTime(item.createdAt)}</td>
+          </tr>
+        `;
+        }).join('');
+
+        tableContainer.className = 'table-wrapper';
+        tableContainer.innerHTML = `
+        <table>
+          <thead>
+            <tr>
+              <th>Студент</th>
+              <th>Файл</th>
+              <th>Статус</th>
+              <th>Схожесть</th>
+              <th>Похоже на</th>
+              <th>Время сдачи</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${rows}
+          </tbody>
+        </table>
+      `;
+    }
+
+    function formatDate(iso) {
+        if (!iso) return '—';
+        const d = new Date(iso);
+        if (Number.isNaN(d.getTime())) return '—';
+        return d.toLocaleDateString('ru-RU', {
+            day: '2-digit',
+            month: '2-digit',
+            year: '2-digit'
+        });
+    }
+
+    function formatDateTime(iso) {
+        if (!iso) return '—';
+        const d = new Date(iso);
+        if (Number.isNaN(d.getTime())) return '—';
+        return d.toLocaleString('ru-RU', {
+            day: '2-digit',
+            month: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+    }
+</script>
+</body>
+</html>
