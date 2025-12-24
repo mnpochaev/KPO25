@@ -1,0 +1,104 @@
+﻿using System;
+using Gozon.Orders.Data;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
+
+#nullable disable
+
+namespace Gozon.Orders.Migrations
+{
+    [DbContext(typeof(OrdersDbContext))]
+    partial class OrdersDbContextModelSnapshot : ModelSnapshot
+    {
+        protected override void BuildModel(ModelBuilder modelBuilder)
+        {
+#pragma warning disable 612, 618
+            modelBuilder
+                .HasAnnotation("ProductVersion", "8.0.0")
+                .HasAnnotation("Relational:MaxIdentifierLength", 63);
+
+            NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
+
+            modelBuilder.Entity("Gozon.Orders.Domain.InboxMessage", b =>
+                {
+                    b.Property<Guid>("MessageId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("ReceivedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("MessageId");
+
+                    b.ToTable("inbox_messages", (string)null);
+                });
+
+            modelBuilder.Entity("Gozon.Orders.Domain.Order", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<decimal>("Amount")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
+                    b.Property<DateTimeOffset>("CreatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
+                    b.Property<long>("UserId")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("orders", (string)null);
+                });
+
+            modelBuilder.Entity("Gozon.Orders.Domain.OutboxMessage", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("Attempts")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("LastError")
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("OccurredAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("PayloadJson")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset?>("PublishedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PublishedAtUtc");
+
+                    b.ToTable("outbox_messages", (string)null);
+                });
+#pragma warning restore 612, 618
+        }
+    }
+}

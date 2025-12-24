@@ -1,0 +1,119 @@
+﻿services:
+  rabbitmq:
+    image: rabbitmq:3-management
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    ports:
+      - "5672:5672"     # AMQP
+      - "15672:15672"   # Web UI
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+
+  orders-db:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: orders
+      POSTGRES_USER: orders
+      POSTGRES_PASSWORD: orders
+    ports:
+      - "5433:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U orders -d orders"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  payments-db:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: payments
+      POSTGRES_USER: payments
+      POSTGRES_PASSWORD: payments
+    ports:
+      - "5434:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U payments -d payments"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  orders:
+    build:
+      context: .
+      dockerfile: src/Gozon.Orders/Dockerfile
+    environment:
+      ASPNETCORE_URLS: http://0.0.0.0:8080
+      ConnectionStrings__OrdersDb: Host=orders-db;Port=5432;Database=orders;Username=orders;Password=orders
+      RabbitMq__Host: rabbitmq
+      RabbitMq__Port: 5672
+      RabbitMq__User: guest
+      RabbitMq__Password: guest
+      RabbitMq__Exchange: gozon
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      orders-db:
+        condition: service_healthy
+    ports:
+      - "5242:8080"
+
+  payments:
+    build:
+      context: .
+      dockerfile: src/Gozon.Payments/Dockerfile
+    environment:
+      ASPNETCORE_URLS: http://0.0.0.0:8080
+      ConnectionStrings__PaymentsDb: Host=payments-db;Port=5432;Database=payments;Username=payments;Password=payments
+      RabbitMq__Host: rabbitmq
+      RabbitMq__Port: 5672
+      RabbitMq__User: guest
+      RabbitMq__Password: guest
+      RabbitMq__Exchange: gozon
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      payments-db:
+        condition: service_healthy
+    ports:
+      - "5243:8080"
+
+  frontend:
+    build:
+      context: .
+      dockerfile: src/Gozon.Frontend/Dockerfile
+    environment:
+      ASPNETCORE_URLS: http://0.0.0.0:8080
+      Backend__ApiBase: http://localhost:5241
+      Backend__WsBase: ws://localhost:5241/ws
+    depends_on:
+      gateway:
+        condition: service_started
+    ports:
+      - "3000:8080"
+
+  gateway:
+    build:
+      context: .
+      dockerfile: src/Gozon.Gateway/Dockerfile
+    environment:
+      ASPNETCORE_URLS: http://0.0.0.0:8080
+      Services__Orders: http://orders:8080
+      Services__Payments: http://payments:8080
+      RabbitMq__Host: rabbitmq
+      RabbitMq__Port: 5672
+      RabbitMq__User: guest
+      RabbitMq__Password: guest
+      RabbitMq__Exchange: gozon
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      orders:
+        condition: service_started
+      payments:
+        condition: service_started
+    ports:
+      - "5241:8080"

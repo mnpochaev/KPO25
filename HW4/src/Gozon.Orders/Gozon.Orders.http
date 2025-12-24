@@ -1,0 +1,6 @@
+@Gozon.Orders_HostAddress = http://localhost:5242
+
+GET {{Gozon.Orders_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

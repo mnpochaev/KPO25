@@ -1,0 +1,6 @@
+@Gozon.Payments_HostAddress = http://localhost:5171
+
+GET {{Gozon.Payments_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
