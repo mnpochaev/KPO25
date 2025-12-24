@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gozon Frontend</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@500;700&display=swap');
+        :root { --bg: #0c111d; --card: #111827; --muted: #9ca3af; --accent: #48e0b1; --danger: #f87171; --border: #1f2937; }
+        * { box-sizing: border-box; }
+        body { margin: 0; font-family: 'Manrope', 'Segoe UI', system-ui, sans-serif; background: radial-gradient(120% 120% at 20% 20%, #132036, #0b0f18 60%); color: #e5e7eb; }
+        .page { max-width: 1100px; margin: 0 auto; padding: 32px 20px 60px; }
+        header { display: flex; flex-wrap: wrap; gap: 16px; align-items: center; justify-content: space-between; margin-bottom: 24px; }
+        .title { font-size: 28px; font-weight: 700; letter-spacing: -0.4px; }
+        .muted { color: var(--muted); font-size: 13px; }
+        .user-box { display: flex; gap: 8px; align-items: center; background: rgba(255,255,255,0.04); padding: 10px 12px; border-radius: 12px; border: 1px solid var(--border); }
+        input[type="number"], input[type="text"] { background: #0f172a; border: 1px solid var(--border); color: #e5e7eb; border-radius: 10px; padding: 10px 12px; font-size: 14px; width: 100%; }
+        input::placeholder { color: #6b7280; }
+        button { border: none; border-radius: 12px; padding: 10px 14px; color: #0b0f18; font-weight: 700; cursor: pointer; transition: transform 120ms ease, box-shadow 120ms ease; }
+        button:hover { transform: translateY(-1px); }
+        button:active { transform: translateY(0); }
+        .btn-accent { background: var(--accent); box-shadow: 0 8px 24px rgba(72,224,177,0.25); }
+        .btn-ghost { background: rgba(255,255,255,0.06); color: #e5e7eb; border: 1px solid var(--border); }
+        .btn-danger { background: var(--danger); box-shadow: 0 8px 24px rgba(248,113,113,0.25); }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 18px; }
+        .card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 18px; box-shadow: 0 10px 40px rgba(0,0,0,0.28); }
+        .card h3 { margin: 0 0 12px; font-size: 18px; display: flex; align-items: center; gap: 8px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 8px; }
+        th, td { text-align: left; padding: 10px 8px; border-bottom: 1px solid var(--border); font-size: 14px; }
+        th { color: #cbd5e1; font-weight: 600; }
+        .status { padding: 6px 10px; border-radius: 10px; font-weight: 700; font-size: 12px; text-transform: uppercase; }
+        .status-finished { background: rgba(72,224,177,0.12); color: #7ef2c9; border: 1px solid rgba(72,224,177,0.25); }
+        .status-new { background: rgba(255,184,108,0.12); color: #ffd6a1; border: 1px solid rgba(255,184,108,0.25); }
+        .status-cancelled { background: rgba(248,113,113,0.12); color: #fca5a5; border: 1px solid rgba(248,113,113,0.25); }
+        .toast { position: fixed; bottom: 22px; right: 20px; min-width: 240px; padding: 14px 16px; border-radius: 12px; background: #0f172a; border: 1px solid var(--border); box-shadow: 0 12px 32px rgba(0,0,0,0.35); opacity: 0; transform: translateY(16px); transition: opacity 160ms ease, transform 160ms ease; pointer-events: none; }
+        .toast.show { opacity: 1; transform: translateY(0); }
+        .toast.success { border-color: rgba(72,224,177,0.4); }
+        .toast.error { border-color: rgba(248,113,113,0.45); }
+        @media (max-width: 640px) { header { flex-direction: column; align-items: flex-start; } }
+    </style>
+</head>
+<body>
+<div class="page">
+    <header>
+        <div class="title">Гоzон — интернет-магазин</div>
+        <div class="user-box">
+            <label class="muted" for="userIdInput">X-User-Id</label>
+            <input id="userIdInput" type="number" min="1" step="1" value="1" style="width:110px">
+            <button class="btn-accent" id="applyUser">Применить</button>
+        </div>
+    </header>
+
+    <div class="grid">
+        <div class="card">
+            <h3>Счёт</h3>
+            <div style="margin-top:10px;">
+                <div class="muted">Баланс</div>
+                <div id="balance" style="font-size:22px;font-weight:700;margin:6px 0;">—</div>
+                <div style="display:flex; gap:8px; margin:10px 0;">
+                    <button class="btn-ghost" id="createAccount">Создать счёт</button>
+                    <button class="btn-ghost" id="refreshAccount">Обновить</button>
+                </div>
+                <div style="display:flex; gap:8px;">
+                    <input id="topupAmount" type="number" min="1" step="0.01" placeholder="Сумма пополнения">
+                    <button class="btn-accent" id="topupBtn">Пополнить</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3>Новый заказ</h3>
+            <div style="display:flex; flex-direction:column; gap:10px; margin-top:10px;">
+                <input id="orderAmount" type="number" min="1" step="0.01" placeholder="Сумма заказа">
+                <input id="orderDesc" type="text" maxlength="200" placeholder="Описание (опционально)">
+                <div style="display:flex; gap:8px;">
+                    <button class="btn-accent" id="createOrder">Создать и оплатить</button>
+                    <button class="btn-ghost" id="refreshOrders">Обновить список</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card" style="margin-top:18px;">
+        <h3>Ваши заказы</h3>
+        <div class="muted">Подписка на обновления статусов включена.</div>
+        <div style="overflow-x:auto; margin-top:10px;">
+            <table id="ordersTable">
+                <thead>
+                <tr>
+                    <th>Заказ</th>
+                    <th>Сумма</th>
+                    <th>Статус</th>
+                    <th>Создан</th>
+                </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<script src="/config.js"></script>
+<script>
+    const config = window.APP_CONFIG || { apiBase: '', wsBase: '' };
+    const state = { userId: localStorage.getItem('gozon_userId') || '1' };
+    const el = {
+        userIdInput: document.getElementById('userIdInput'),
+        applyUser: document.getElementById('applyUser'),
+        balance: document.getElementById('balance'),
+        createAccount: document.getElementById('createAccount'),
+        refreshAccount: document.getElementById('refreshAccount'),
+        topupAmount: document.getElementById('topupAmount'),
+        topupBtn: document.getElementById('topupBtn'),
+        orderAmount: document.getElementById('orderAmount'),
+        orderDesc: document.getElementById('orderDesc'),
+        createOrder: document.getElementById('createOrder'),
+        refreshOrders: document.getElementById('refreshOrders'),
+        ordersTable: document.getElementById('ordersTable').querySelector('tbody'),
+        toast: document.getElementById('toast'),
+    };
+    el.userIdInput.value = state.userId;
+
+    function showToast(message, type = 'success') {
+        el.toast.textContent = message;
+        el.toast.className = `toast show ${type}`;
+        setTimeout(() => el.toast.classList.remove('show'), 2000);
+    }
+
+    async function api(path, options = {}) {
+        const headers = options.headers ? { ...options.headers } : {};
+        headers['X-User-Id'] = state.userId;
+        if (options.body && !headers['Content-Type'])
+            headers['Content-Type'] = 'application/json';
+
+        const res = await fetch(config.apiBase + path, { ...options, headers });
+        const text = await res.text();
+        const data = text ? (() => { try { return JSON.parse(text); } catch { return text; } })() : null;
+        if (!res.ok) {
+            const msg = data?.error || res.statusText || 'Ошибка';
+            throw new Error(msg);
+        }
+        return data;
+    }
+
+    async function loadBalance() {
+        try {
+            const data = await api('/accounts/balance');
+            el.balance.textContent = `${Number(data.balance).toFixed(2)} ₽`;
+        } catch {
+            el.balance.textContent = 'Нет счёта';
+        }
+    }
+
+    async function createAccount() {
+        await api('/accounts', { method: 'POST' });
+        showToast('Счёт создан');
+        await loadBalance();
+    }
+
+    async function topup() {
+        const amount = parseFloat(el.topupAmount.value);
+        if (!amount || amount <= 0) { showToast('Введите сумму > 0', 'error'); return; }
+        await api('/accounts/topup', {
+            method: 'POST',
+            body: JSON.stringify({ amount })
+        });
+        showToast('Баланс пополнен');
+        el.topupAmount.value = '';
+        await loadBalance();
+    }
+
+    function statusBadge(status) {
+        const key = (status || '').toLowerCase();
+        const isFinished = key === 'finished' || key === 'оплачен';
+        const isCancelled = key === 'cancelled' || key === 'отменён' || key === 'отменен';
+        const cls = isFinished ? 'status-finished'
+            : isCancelled ? 'status-cancelled'
+            : 'status-new';
+        return `<span class="status ${cls}">${status}</span>`;
+    }
+
+    function fmtDate(iso) {
+        return new Intl.DateTimeFormat('ru-RU', {
+            hour: '2-digit', minute: '2-digit', day: '2-digit', month: 'short'
+        }).format(new Date(iso));
+    }
+
+    async function loadOrders() {
+        try {
+            const list = await api('/orders');
+            el.ordersTable.innerHTML = list.map(o => `
+                <tr>
+                    <td class="muted" style="font-size:12px;">${o.id}</td>
+                    <td>${Number(o.amount).toFixed(2)} ₽</td>
+                    <td>${statusBadge(o.status)}</td>
+                    <td class="muted">${fmtDate(o.createdAtUtc)}</td>
+                </tr>
+            `).join('') || '<tr><td colspan="4" class="muted">Заказов пока нет</td></tr>';
+        } catch (err) {
+            el.ordersTable.innerHTML = `<tr><td colspan="4" class="muted">Не удалось загрузить: ${err.message}</td></tr>`;
+        }
+    }
+
+    async function createOrder() {
+        const amount = parseFloat(el.orderAmount.value);
+        if (!amount || amount <= 0) { showToast('Введите сумму > 0', 'error'); return; }
+        const description = el.orderDesc.value?.trim() || null;
+        await api('/orders', {
+            method: 'POST',
+            body: JSON.stringify({ amount, description })
+        });
+        showToast('Заказ создан, оплата в процессе');
+        el.orderAmount.value = '';
+        el.orderDesc.value = '';
+        await loadOrders();
+    }
+
+    el.applyUser.onclick = () => {
+        const val = el.userIdInput.value.trim();
+        if (!val || Number(val) <= 0) { showToast('Некорректный UserId', 'error'); return; }
+        state.userId = val;
+        localStorage.setItem('gozon_userId', val);
+        showToast(`X-User-Id = ${val}`);
+        loadBalance();
+        loadOrders();
+        startSignalR();
+    };
+    el.createAccount.onclick = () => createAccount().catch(e => showToast(e.message, 'error'));
+    el.refreshAccount.onclick = () => loadBalance().catch(e => showToast(e.message, 'error'));
+    el.topupBtn.onclick = () => topup().catch(e => showToast(e.message, 'error'));
+    el.createOrder.onclick = () => createOrder().catch(e => showToast(e.message, 'error'));
+    el.refreshOrders.onclick = () => loadOrders().catch(e => showToast(e.message, 'error'));
+
+    let ws = null;
+    function startWebSocket() {
+        const wsUrl = config.wsBase + `?userId=${state.userId}`;
+        try { if (ws) { ws.close(); } } catch { }
+        ws = new WebSocket(wsUrl.replace(/^http/, 'ws'));
+
+        ws.onmessage = (e) => {
+            try {
+                const payload = JSON.parse(e.data);
+                const normalized = (payload.status || '').toLowerCase();
+                const isOk = normalized === 'finished' || normalized === 'оплачен';
+                const text = isOk
+                    ? `Оплата прошла (заказ ${payload.orderId})`
+                    : `Статус: ${payload.status || 'Неизвестно'} (заказ ${payload.orderId})`;
+                showToast(text);
+                loadOrders().catch(() => {});
+            } catch {
+            }
+        };
+        ws.onclose = () => setTimeout(startWebSocket, 1000);
+        ws.onerror = () => ws.close();
+    }
+
+    loadBalance().then(loadOrders).catch(() => loadOrders());
+    startWebSocket();
+</script>
+</body>
+</html>
