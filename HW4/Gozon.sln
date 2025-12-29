@@ -1,0 +1,60 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{6D0E3512-5551-4FFE-A127-A305BCA937CF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gozon.Contracts", "src\Gozon.Contracts\Gozon.Contracts.csproj", "{FFA66849-4516-43EE-87F6-05191263C51C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gozon.Orders", "src\Gozon.Orders\Gozon.Orders.csproj", "{7427DD38-D4C3-42F6-8E8C-8EED97A85B6B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gozon.Payments", "src\Gozon.Payments\Gozon.Payments.csproj", "{3C52AAA8-11A7-4349-86B7-7660C62741E0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gozon.Gateway", "src\Gozon.Gateway\Gozon.Gateway.csproj", "{E3F0C203-5FFB-47D3-8C8E-583182B4D876}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gozon.Frontend", "src\Gozon.Frontend\Gozon.Frontend.csproj", "{D3BF2EBE-18D9-4FCB-A21C-3B3F1AE941A3}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{43D3FEC2-618F-43A2-8612-C21F2B0C8FB2}"
+	ProjectSection(SolutionItems) = preProject
+		docker-compose.yml = docker-compose.yml
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{FFA66849-4516-43EE-87F6-05191263C51C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FFA66849-4516-43EE-87F6-05191263C51C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FFA66849-4516-43EE-87F6-05191263C51C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FFA66849-4516-43EE-87F6-05191263C51C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7427DD38-D4C3-42F6-8E8C-8EED97A85B6B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7427DD38-D4C3-42F6-8E8C-8EED97A85B6B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7427DD38-D4C3-42F6-8E8C-8EED97A85B6B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7427DD38-D4C3-42F6-8E8C-8EED97A85B6B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3C52AAA8-11A7-4349-86B7-7660C62741E0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3C52AAA8-11A7-4349-86B7-7660C62741E0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3C52AAA8-11A7-4349-86B7-7660C62741E0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3C52AAA8-11A7-4349-86B7-7660C62741E0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E3F0C203-5FFB-47D3-8C8E-583182B4D876}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E3F0C203-5FFB-47D3-8C8E-583182B4D876}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E3F0C203-5FFB-47D3-8C8E-583182B4D876}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E3F0C203-5FFB-47D3-8C8E-583182B4D876}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D3BF2EBE-18D9-4FCB-A21C-3B3F1AE941A3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D3BF2EBE-18D9-4FCB-A21C-3B3F1AE941A3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D3BF2EBE-18D9-4FCB-A21C-3B3F1AE941A3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D3BF2EBE-18D9-4FCB-A21C-3B3F1AE941A3}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{FFA66849-4516-43EE-87F6-05191263C51C} = {6D0E3512-5551-4FFE-A127-A305BCA937CF}
+		{7427DD38-D4C3-42F6-8E8C-8EED97A85B6B} = {6D0E3512-5551-4FFE-A127-A305BCA937CF}
+		{3C52AAA8-11A7-4349-86B7-7660C62741E0} = {6D0E3512-5551-4FFE-A127-A305BCA937CF}
+		{E3F0C203-5FFB-47D3-8C8E-583182B4D876} = {6D0E3512-5551-4FFE-A127-A305BCA937CF}
+		{D3BF2EBE-18D9-4FCB-A21C-3B3F1AE941A3} = {6D0E3512-5551-4FFE-A127-A305BCA937CF}
+	EndGlobalSection
+EndGlobal
